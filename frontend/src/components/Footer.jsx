@@ -21,7 +21,7 @@ export default function Footer() {
         </div>
         <div>
           <h4>Contact</h4>
-          <p>Odisha, India</p><p>info@mahaprabhutech.com</p><p>+91 80181 98730</p>
+          <p>Odisha, India</p><p>info@mahaprabhutech.com</p><p>+91 7735776060</p>
         </div>
       </div>
       <div className="container footer-bottom">
