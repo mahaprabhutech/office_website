@@ -1,56 +1,214 @@
-import { useState } from 'react';
-import api from '../services/api';
-import PageHero from '../components/PageHero';
+import { useState } from "react";
+import api from "../services/api";
+import PageHero from "../components/PageHero";
 
-const initial = { name: '', email: '', mobile: '', company: '', service: '', budget_range: '', message: '' };
+const initial = {
+  name: "",
+  email: "",
+  mobile: "",
+  company: "",
+  service: "",
+  budget_range: "",
+  message: "",
+};
 
 export default function ContactPage() {
   const [form, setForm] = useState(initial);
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState("");
 
   const submit = async (event) => {
     event.preventDefault();
-    setStatus('sending');
+    setStatus("sending");
+
     try {
-      const { data } = await api.post('/contact', form);
-      setStatus(data.message);
+      const { data } = await api.post("/contact", form);
+
+      setStatus(data.message || "Your enquiry has been submitted successfully.");
       setForm(initial);
     } catch (error) {
-      setStatus(error.response?.data?.message || 'Unable to submit. Check the backend connection and form fields.');
+      setStatus(
+        error.response?.data?.message ||
+          "Unable to submit. Check the backend connection and form fields."
+      );
     }
   };
 
   return (
     <>
-      <PageHero eyebrow="Contact us" title="Tell us what you want to build or improve." text="Share your requirement and our team will contact you to understand the next practical step." />
+      <PageHero
+        eyebrow="Contact us"
+        title="Tell us what you want to build or improve."
+        text="Share your requirement and our team will contact you to understand the next practical step."
+      />
+
       <section className="section">
         <div className="container contact-grid">
+          {/* Company contact information */}
           <div className="contact-info">
-            <h2>Company contact</h2>
-            <div><span>Email</span><strong>info@mahaprabhutech.com</strong></div>
-            <div><span>Phone</span><strong>+91 80181 98730</strong></div>
-            <div><span>Location</span><strong>Odisha, India</strong></div>
-            <p>For detailed project requirements, use the Request a Quote form.</p>
+            <h2>Company Contact</h2>
+
+            <div>
+              <span>Email</span>
+
+              <strong>
+                <a href="mailto:info@mahaprabhutech.com">
+                  info@mahaprabhutech.com
+                </a>
+              </strong>
+            </div>
+
+            <div>
+              <span>Phone</span>
+
+              <strong>
+                <a href="tel:+917735776060">
+                  +91 77357 76060
+                </a>
+              </strong>
+            </div>
+
+            <div>
+              <span>Address</span>
+
+              <strong>
+                Baulanga, Kujanga Block
+                <br />
+                Jagatsinghpur District
+                <br />
+                Odisha, India – 754141
+              </strong>
+            </div>
+
+            <p>
+              For detailed software, website, mobile application or technology
+              requirements, submit the enquiry form.
+            </p>
           </div>
+
+          {/* Contact form */}
           <form className="form-card" onSubmit={submit}>
             <div className="form-row">
-              <label>Full name<input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></label>
-              <label>Email<input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></label>
+              <label>
+                Full name
+
+                <input
+                  type="text"
+                  required
+                  value={form.name}
+                  onChange={(event) =>
+                    setForm({
+                      ...form,
+                      name: event.target.value,
+                    })
+                  }
+                />
+              </label>
+
+              <label>
+                Email
+
+                <input
+                  type="email"
+                  required
+                  value={form.email}
+                  onChange={(event) =>
+                    setForm({
+                      ...form,
+                      email: event.target.value,
+                    })
+                  }
+                />
+              </label>
             </div>
+
             <div className="form-row">
-              <label>Mobile<input required value={form.mobile} onChange={(e) => setForm({ ...form, mobile: e.target.value })} /></label>
-              <label>Company<input value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} /></label>
+              <label>
+                Mobile
+
+                <input
+                  type="tel"
+                  required
+                  value={form.mobile}
+                  onChange={(event) =>
+                    setForm({
+                      ...form,
+                      mobile: event.target.value,
+                    })
+                  }
+                />
+              </label>
+
+              <label>
+                Company
+
+                <input
+                  type="text"
+                  value={form.company}
+                  onChange={(event) =>
+                    setForm({
+                      ...form,
+                      company: event.target.value,
+                    })
+                  }
+                />
+              </label>
             </div>
-            <label>Service required
-              <select value={form.service} onChange={(e) => setForm({ ...form, service: e.target.value })}>
+
+            <label>
+              Service required
+
+              <select
+                value={form.service}
+                onChange={(event) =>
+                  setForm({
+                    ...form,
+                    service: event.target.value,
+                  })
+                }
+              >
                 <option value="">Select a service</option>
-                <option>Website Development</option><option>Mobile Application</option>
-                <option>Custom Software</option><option>Technology Consulting</option>
+                <option value="Website Development">
+                  Website Development
+                </option>
+                <option value="Mobile Application">
+                  Mobile Application
+                </option>
+                <option value="Custom Software">
+                  Custom Software
+                </option>
+                <option value="Technology Consulting">
+                  Technology Consulting
+                </option>
               </select>
             </label>
-            <label>Message<textarea required rows="6" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} /></label>
-            <button className="button" disabled={status === 'sending'}>{status === 'sending' ? 'Submitting...' : 'Send Enquiry'}</button>
-            {status && status !== 'sending' && <p className="form-status">{status}</p>}
+
+            <label>
+              Message
+
+              <textarea
+                required
+                rows="6"
+                value={form.message}
+                onChange={(event) =>
+                  setForm({
+                    ...form,
+                    message: event.target.value,
+                  })
+                }
+              />
+            </label>
+
+            <button
+              type="submit"
+              className="button"
+              disabled={status === "sending"}
+            >
+              {status === "sending" ? "Submitting..." : "Send Enquiry"}
+            </button>
+
+            {status && status !== "sending" && (
+              <p className="form-status">{status}</p>
+            )}
           </form>
         </div>
       </section>
