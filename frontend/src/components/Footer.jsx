@@ -1,21 +1,27 @@
-import { Link } from "react-router-dom";
-import Logo from "./Logo";
+import { Link } from 'react-router-dom';
+import Logo from './Logo';
+import '../styles/spiritual-purpose.css';
 
 export default function Footer() {
   return (
-    <footer className="site-footer">
+    <footer className="site-footer purpose-footer">
       <div className="container footer-grid">
-        {/* Company Information */}
-        <div>
+        <div className="footer-brand-column">
           <Logo />
 
           <p>
-            Secure and meaningful digital solutions for businesses,
-            institutions and social-impact initiatives.
+            A spiritual software company creating secure digital solutions
+            for service, animal welfare, institutions, businesses and
+            social-impact initiatives.
           </p>
+
+          <div className="footer-purpose-tags">
+            <span>Spiritual Technology</span>
+            <span>Animal Welfare</span>
+            <span>Responsible Innovation</span>
+          </div>
         </div>
 
-        {/* Company Links */}
         <div>
           <h4>Company</h4>
 
@@ -25,17 +31,15 @@ export default function Footer() {
           <Link to="/blog">Insights</Link>
         </div>
 
-        {/* Solution Links */}
         <div>
           <h4>Solutions</h4>
 
-          <Link to="/services">Services</Link>
-          <Link to="/projects">Projects</Link>
+          <Link to="/services">Technology Services</Link>
+          <Link to="/projects">Purpose-led Projects</Link>
           <Link to="/request-quote">Request a Quote</Link>
           <Link to="/contact">Contact</Link>
         </div>
 
-        {/* Contact Details */}
         <div>
           <h4>Contact</h4>
 
@@ -54,14 +58,15 @@ export default function Footer() {
           </p>
 
           <p>
-            <a href="tel:+917735776060">
-              +91 77357 76060
-            </a>
+            <a href="tel:+917735776060">+91 77357 76060</a>
           </p>
         </div>
       </div>
 
-      {/* Footer Bottom */}
+      <div className="container footer-purpose-line">
+        <span>Technology for seva, compassion and meaningful progress.</span>
+      </div>
+
       <div className="container footer-bottom">
         <span>
           © 2026 MAHAPRABHU TECH INNOVATION PRIVATE LIMITED
@@ -69,7 +74,7 @@ export default function Footer() {
 
         <span>
           <Link to="/privacy-policy">Privacy</Link>
-          {" · "}
+          {' · '}
           <Link to="/terms-and-conditions">Terms</Link>
         </span>
       </div>
