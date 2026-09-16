@@ -15,6 +15,7 @@ import BlogDetailPage from './pages/BlogDetailPage';
 import LegalPage from './pages/LegalPage';
 import ContactPage from './pages/ContactPage';
 import QuotePage from './pages/QuotePage';
+import TechnologySecurityPage from './pages/TechnologySecurityPage';
 import NotFoundPage from './pages/NotFoundPage';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
@@ -43,6 +44,7 @@ export default function App() {
         <Route path="terms-and-conditions" element={<LegalPage type="terms" />} />
         <Route path="contact" element={<ContactPage />} />
         <Route path="request-quote" element={<QuotePage />} />
+        <Route path="technology-security" element={<TechnologySecurityPage />} />
       </Route>
 
       <Route path="admin/login" element={<AdminLoginPage />} />

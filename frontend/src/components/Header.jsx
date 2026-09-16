@@ -4,7 +4,8 @@ import Logo from './Logo';
 
 const links = [
   ['/', 'Home'], ['/about', 'About'], ['/services', 'Services'], ['/projects', 'Projects'],
-  ['/team', 'Team'], ['/careers', 'Careers'], ['/blog', 'Insights'], ['/contact', 'Contact'],
+  ['/team', 'Team'], ['/careers', 'Careers'], ['/blog', 'Insights'],
+  ['/technology-security', 'Technology'], ['/contact', 'Contact'],
 ];
 
 export default function Header() {

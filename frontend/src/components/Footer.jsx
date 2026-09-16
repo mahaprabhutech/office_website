@@ -36,6 +36,7 @@ export default function Footer() {
 
           <Link to="/services">Technology Services</Link>
           <Link to="/projects">Purpose-led Projects</Link>
+          <Link to="/technology-security">GPS &amp; Data Security</Link>
           <Link to="/request-quote">Request a Quote</Link>
           <Link to="/contact">Contact</Link>
         </div>
