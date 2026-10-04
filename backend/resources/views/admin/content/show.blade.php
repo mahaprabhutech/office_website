@@ -26,12 +26,18 @@
                 $value = $record->{$field['column']} ?? null;
                 $type = $field['type'] ?? 'text';
             @endphp
-            <div class="detail-field {{ ($field['span'] ?? 1) === 2 || in_array($type, ['textarea', 'richtext'], true) ? 'span-2' : '' }}">
+            <div class="detail-field {{ ($field['span'] ?? 1) === 2 || in_array($type, ['textarea', 'richtext', 'list'], true) ? 'span-2' : '' }}">
                 <dt>{{ $field['label'] }}</dt>
                 <dd>
                     @if($type === 'image')
                         @if($value)
-                            @php($src = \Illuminate\Support\Str::startsWith((string) $value, ['http://', 'https://']) ? $value : asset('storage/'.ltrim((string) $value, '/')))
+                            @php
+                                $src = \Illuminate\Support\Str::startsWith((string) $value, ['http://', 'https://'])
+                                    ? $value
+                                    : (\Illuminate\Support\Str::startsWith((string) $value, '/')
+                                        ? asset(ltrim((string) $value, '/'))
+                                        : asset('storage/'.ltrim((string) $value, '/')));
+                            @endphp
                             <img src="{{ $src }}" alt="" class="detail-image">
                         @else
                             <span class="muted-value">No image uploaded</span>
@@ -45,6 +51,15 @@
                             </a>
                         @else
                             <span class="muted-value">No file uploaded</span>
+                        @endif
+                    @elseif($type === 'list')
+                        @php($listItems = is_array($value) ? $value : (json_decode((string) $value, true) ?: []))
+                        @if($listItems)
+                            <ul class="preserve-lines" style="margin:0;padding-left:20px">
+                                @foreach($listItems as $listItem)<li>{{ $listItem }}</li>@endforeach
+                            </ul>
+                        @else
+                            <span class="muted-value">Not provided</span>
                         @endif
                     @elseif($type === 'boolean')
                         <span class="status-badge {{ $value ? 'status-active' : 'status-inactive' }}">{{ $value ? 'Active' : 'Inactive' }}</span>

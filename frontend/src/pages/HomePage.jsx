@@ -33,6 +33,30 @@ const focusAreas = [
   'Government, NGO and social-impact dashboards',
   'Business websites, APIs and cloud deployment',
 ];
+function mergeProjectPortfolio(apiProjects = []) {
+  const map = new Map(fallbackProjects.map((project) => [project.slug, project]));
+
+  apiProjects.forEach((project) => {
+    const fallback = map.get(project.slug) || {};
+    map.set(project.slug, { ...fallback, ...project });
+  });
+
+  const priority = ['gaumitra', 'jeev-sathi'];
+
+  return [...map.values()]
+    .filter((project) => project.active !== false)
+    .sort((a, b) => {
+      const ai = priority.indexOf(a.slug);
+      const bi = priority.indexOf(b.slug);
+      if (ai !== -1 || bi !== -1) {
+        if (ai === -1) return 1;
+        if (bi === -1) return -1;
+        return ai - bi;
+      }
+      return Number(a.sort_order || 99) - Number(b.sort_order || 99);
+    });
+}
+
 
 export default function HomePage() {
   const [data, setData] = useState({
@@ -61,7 +85,7 @@ export default function HomePage() {
             ? response.services
             : current.services,
           projects: response?.projects?.length
-            ? response.projects
+            ? mergeProjectPortfolio(response.projects)
             : current.projects,
           posts: response?.posts?.length
             ? response.posts

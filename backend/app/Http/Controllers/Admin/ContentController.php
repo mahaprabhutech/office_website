@@ -237,6 +237,7 @@ class ContentController extends Controller
                 'datetime-local' => 'date',
                 'image' => 'image',
                 'file' => 'file',
+                'list' => 'string',
                 default => 'string',
             };
 
@@ -246,6 +247,8 @@ class ContentController extends Controller
             } elseif ($type === 'file') {
                 $fieldRules[] = 'max:10240';
                 $fieldRules[] = 'mimes:pdf,doc,docx';
+            } elseif ($type === 'list') {
+                $fieldRules[] = 'max:50000';
             } elseif ($type === 'number') {
                 if (isset($field['min'])) {
                     $fieldRules[] = 'min:'.$field['min'];
@@ -300,6 +303,16 @@ class ContentController extends Controller
                     $this->registry->uploadDirectory($definition['key'], $column),
                     'public'
                 );
+                continue;
+            }
+
+            if ($type === 'list' && array_key_exists($column, $validated)) {
+                $lines = preg_split('/\r\n|\r|\n/', (string) ($validated[$column] ?? '')) ?: [];
+                $items = array_values(array_filter(
+                    array_map(fn (string $item): string => trim($item), $lines),
+                    fn (string $item): bool => $item !== ''
+                ));
+                $data[$column] = $items ? json_encode($items, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null;
                 continue;
             }
 

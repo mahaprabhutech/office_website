@@ -51,6 +51,11 @@
                         try { $value = \Illuminate\Support\Carbon::parse($value)->format('Y-m-d\TH:i'); } catch (\Throwable $e) {}
                     } elseif ($type === 'date' && $value) {
                         try { $value = \Illuminate\Support\Carbon::parse($value)->format('Y-m-d'); } catch (\Throwable $e) {}
+                    } elseif ($type === 'list' && $value) {
+                        $decodedList = json_decode((string) $value, true);
+                        if (is_array($decodedList)) {
+                            $value = implode(PHP_EOL, $decodedList);
+                        }
                     }
                 @endphp
 
@@ -60,11 +65,11 @@
                         @if(($field['required'] ?? false) && !$readonly)<i>*</i>@endif
                     </label>
 
-                    @if($type === 'textarea' || $type === 'richtext')
+                    @if($type === 'textarea' || $type === 'richtext' || $type === 'list')
                         <textarea
                             id="field-{{ $column }}"
                             name="{{ $column }}"
-                            rows="{{ $type === 'richtext' ? 12 : 5 }}"
+                            rows="{{ $type === 'richtext' ? 12 : ($type === 'list' ? 8 : 5) }}"
                             class="{{ $type === 'richtext' ? 'rich-editor' : '' }} @error($column) is-invalid @enderror"
                             placeholder="Enter {{ strtolower($field['label']) }}"
                             @readonly($readonly)
@@ -86,7 +91,13 @@
                     @elseif($type === 'image')
                         <div class="upload-field">
                             @if($value)
-                                @php($src = \Illuminate\Support\Str::startsWith((string) $value, ['http://', 'https://']) ? $value : asset('storage/'.ltrim((string) $value, '/')))
+                                @php
+                                    $src = \Illuminate\Support\Str::startsWith((string) $value, ['http://', 'https://'])
+                                        ? $value
+                                        : (\Illuminate\Support\Str::startsWith((string) $value, '/')
+                                            ? asset(ltrim((string) $value, '/'))
+                                            : asset('storage/'.ltrim((string) $value, '/')));
+                                @endphp
                                 <img src="{{ $src }}" alt="" class="upload-preview" data-image-preview>
                             @else
                                 <div class="upload-placeholder" data-upload-placeholder>
