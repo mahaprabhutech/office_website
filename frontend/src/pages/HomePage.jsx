@@ -5,6 +5,7 @@ import { fallbackPosts, fallbackProjects, fallbackServices } from '../data/fallb
 import SectionTitle from '../components/SectionTitle';
 import ServiceCard from '../components/ServiceCard';
 import ProjectCard from '../components/ProjectCard';
+import { isFulawalaProject, visibleProjects } from '../utils/projectVisibility';
 import '../styles/spiritual-purpose.css';
 
 const purposePillars = [
@@ -34,17 +35,20 @@ const focusAreas = [
   'Business websites, APIs and cloud deployment',
 ];
 function mergeProjectPortfolio(apiProjects = []) {
-  const map = new Map(fallbackProjects.map((project) => [project.slug, project]));
+  const map = new Map(
+    fallbackProjects
+      .filter((project) => !isFulawalaProject(project))
+      .map((project) => [project.slug, project])
+  );
 
-  apiProjects.forEach((project) => {
+  apiProjects.filter((project) => !isFulawalaProject(project)).forEach((project) => {
     const fallback = map.get(project.slug) || {};
     map.set(project.slug, { ...fallback, ...project });
   });
 
   const priority = ['gaumitra', 'jeev-sathi'];
 
-  return [...map.values()]
-    .filter((project) => project.active !== false)
+  return visibleProjects([...map.values()])
     .sort((a, b) => {
       const ai = priority.indexOf(a.slug);
       const bi = priority.indexOf(b.slug);
@@ -61,7 +65,7 @@ function mergeProjectPortfolio(apiProjects = []) {
 export default function HomePage() {
   const [data, setData] = useState({
     services: fallbackServices,
-    projects: fallbackProjects,
+    projects: mergeProjectPortfolio([]),
     posts: fallbackPosts,
     testimonials: [],
     settings: {},
@@ -294,7 +298,7 @@ export default function HomePage() {
             {data.projects
               .slice(0, 4)
               .map((project) => (
-                <ProjectCard key={project.id} project={project} />
+                <ProjectCard key={project.slug || project.id} project={project} />
               ))}
           </div>
         </div>

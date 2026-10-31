@@ -3,6 +3,7 @@ import api from '../services/api';
 import { fallbackProjects } from '../data/fallback';
 import PageHero from '../components/PageHero';
 import ProjectCard from '../components/ProjectCard';
+import { isFulawalaProject, visibleProjects } from '../utils/projectVisibility';
 import '../styles/product-portfolio.css';
 
 const priority = ['gaumitra', 'jeev-sathi'];
@@ -10,37 +11,56 @@ const priority = ['gaumitra', 'jeev-sathi'];
 function mergePortfolio(apiItems = []) {
   const map = new Map();
 
-  fallbackProjects.forEach((project) => map.set(project.slug, project));
-  apiItems.forEach((project) => {
-    const fallback = map.get(project.slug) || {};
-    map.set(project.slug, { ...fallback, ...project });
-  });
+  fallbackProjects
+    .filter((project) => !isFulawalaProject(project))
+    .forEach((project) => map.set(project.slug, project));
 
-  return [...map.values()]
-    .filter((project) => project.active !== false)
-    .sort((a, b) => {
-      const ai = priority.indexOf(a.slug);
-      const bi = priority.indexOf(b.slug);
-      if (ai !== -1 || bi !== -1) {
-        if (ai === -1) return 1;
-        if (bi === -1) return -1;
-        return ai - bi;
-      }
-      return Number(a.sort_order || 99) - Number(b.sort_order || 99);
+  apiItems
+    .filter((project) => !isFulawalaProject(project))
+    .forEach((project) => {
+      const fallback = map.get(project.slug) || {};
+      map.set(project.slug, { ...fallback, ...project });
     });
+
+  return visibleProjects([...map.values()]).sort((a, b) => {
+    const ai = priority.indexOf(a.slug);
+    const bi = priority.indexOf(b.slug);
+    if (ai !== -1 || bi !== -1) {
+      if (ai === -1) return 1;
+      if (bi === -1) return -1;
+      return ai - bi;
+    }
+    return Number(a.sort_order || 99) - Number(b.sort_order || 99);
+  });
 }
 
 export default function ProjectsPage() {
   const [items, setItems] = useState(() => mergePortfolio([]));
 
   useEffect(() => {
+    let active = true;
+
     api.get('/public/projects')
-      .then((response) => setItems(mergePortfolio(response.data.data || response.data || [])))
-      .catch(() => setItems(mergePortfolio([])));
+      .then((response) => {
+        if (!active) return;
+        const payload = response.data?.data || response.data || [];
+        setItems(mergePortfolio(Array.isArray(payload) ? payload : []));
+      })
+      .catch(() => {
+        if (active) setItems(mergePortfolio([]));
+      });
+
+    return () => { active = false; };
   }, []);
 
-  const flagship = useMemo(() => items.filter((item) => priority.includes(item.slug)), [items]);
-  const other = useMemo(() => items.filter((item) => !priority.includes(item.slug)), [items]);
+  const flagship = useMemo(
+    () => items.filter((item) => priority.includes(item.slug)),
+    [items]
+  );
+  const other = useMemo(
+    () => items.filter((item) => !priority.includes(item.slug)),
+    [items]
+  );
 
   return (
     <>
@@ -64,7 +84,7 @@ export default function ProjectsPage() {
         </div>
 
         <div className="container project-grid project-grid--portfolio">
-          {flagship.map((item) => <ProjectCard key={item.slug} project={item} />)}
+          {flagship.map((item) => <ProjectCard key={item.slug || item.id} project={item} />)}
         </div>
       </section>
 
